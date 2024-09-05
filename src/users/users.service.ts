@@ -8,6 +8,8 @@ import { ErrorMessage } from 'src/utils/messages/error.messages';
 import { hash, compare } from 'bcrypt';
 import { SignInUserDto } from './dto/signin-user.dto';
 import { sign } from 'jsonwebtoken';
+import { UserDto } from './dto/user.dto';
+import { SuccessMessage } from 'src/utils/messages/success.messages';
 
 @Injectable()
 export class UsersService {
@@ -42,24 +44,39 @@ export class UsersService {
     return await userExists;
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async findAll() : Promise<UserDto[]>{
+    let users = await this.usersRepository.find();
+    let usersDto = users.map((user)=> UserDto.customMapping(user));
+    return usersDto;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findOne(email: string) : Promise<UserDto> {
+    const userExists = await this.findUserByEmail(email);
+    if(!userExists) throw new BadRequestException(ErrorMessage.USER_NOT_FOUND);
+
+    return await UserDto.customMapping(userExists);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async update(email: string, updateUserDto: UpdateUserDto) {
+    const userExists = await this.findUserByEmail(email);
+    if(!userExists) throw new BadRequestException(ErrorMessage.USER_NOT_FOUND);
+
+    userExists.name = updateUserDto.name;
+    userExists.email = updateUserDto.email;
+    userExists.age = updateUserDto.age;
+
+    const user = await this.usersRepository.save(userExists);
+
+    return await UserDto.customMapping(user);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async remove(email: string) {
+    const userExists = await this.findUserByEmail(email);
+    if(!userExists) throw new BadRequestException(ErrorMessage.USER_NOT_FOUND);
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    await this.usersRepository.delete(userExists);
+
+    return SuccessMessage.USER_SUCCESSFULLY_DELETED;
   }
 
 
