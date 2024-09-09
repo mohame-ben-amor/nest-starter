@@ -12,6 +12,7 @@ async function bootstrap() {
     .setTitle('Box2Home')
     .setDescription('Box2Home test API description')
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('Box2Home')
     .build();
   const document = SwaggerModule.createDocument(app, config);

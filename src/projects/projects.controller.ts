@@ -1,34 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthenticationGuard } from 'src/utils/guards/authentication.guard';
 
 @Controller('projects')
+@ApiTags('projects')
+@UseGuards(AuthenticationGuard)
+@ApiBearerAuth()
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectsService.create(createProjectDto);
+  async create(@Body() createProjectDto: CreateProjectDto) {
+    return await this.projectsService.create(createProjectDto);
   }
 
   @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  async findAll() {
+    return await this.projectsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.projectsService.findOne(+id);
+  @Get(':name')
+  async findOne(@Param('name') name: string) {
+    return await this.projectsService.findOne(name);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.update(+id, updateProjectDto);
+  @Patch(':name')
+  async update(@Param('name') name: string, @Body() updateProjectDto: UpdateProjectDto) {
+    return await this.projectsService.update(name, updateProjectDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(+id);
+  @Delete(':name')
+  async remove(@Param('name') name: string) {
+    return await this.projectsService.remove(name);
   }
 }

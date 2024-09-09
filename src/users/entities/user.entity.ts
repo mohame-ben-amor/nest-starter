@@ -1,5 +1,7 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Roles } from "../utility/common/users-role.enum";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { UserRoleEnum } from "../utility/common/users-role.enum";
+import { ProjectEntity } from "src/projects/entities/project.entity";
+import { TaskEntity } from "src/tasks/entities/task.entity";
 
 @Entity('users')
 export class UserEntity {
@@ -21,11 +23,15 @@ export class UserEntity {
 
     @CreateDateColumn()
     createdAt: Date;
-    
+     
     @UpdateDateColumn()
     updatedAt: Date;
     
 
-    @Column({type:'enum', enum:Roles, array:false, default:[Roles.USER]})
-    role:Roles
+    @Column({type:'enum', enum:UserRoleEnum, array:false, default:[UserRoleEnum.USER]})
+    role:UserRoleEnum;
+
+    @OneToMany(() => TaskEntity, (task) => task.assignedUser)
+    tasks: TaskEntity[];
+
 }

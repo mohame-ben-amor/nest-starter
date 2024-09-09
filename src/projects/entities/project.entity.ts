@@ -1,7 +1,9 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { TaskEntity } from "src/tasks/entities/task.entity";
+import { UserEntity } from "src/users/entities/user.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('projects')
-export class Project {
+export class ProjectEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -17,5 +19,8 @@ export class Project {
     
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => TaskEntity, (task) => task.project)
+    tasks: TaskEntity[];
 
 }

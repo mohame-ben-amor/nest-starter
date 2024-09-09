@@ -21,16 +21,16 @@ export class UsersService {
   ) {}
 
 
-  async signUp(createUserDto: CreateUserDto): Promise<UserEntity> {
+  async signUp(createUserDto: CreateUserDto): Promise<UserDto> {
     const userExists = await this.findUserByEmail(createUserDto.email);
     if(userExists) throw new BadRequestException(ErrorMessage.USER_EXISTS);
 
+    console.log(createUserDto)
     createUserDto.password = await hash(createUserDto.password, 10);
     let user = this.usersRepository.create(createUserDto);
     user = await this.usersRepository.save(user);
-    delete user.password;
-    delete userExists.id;
-    return user;
+    
+    return UserDto.customMapping(user);
   }
 
   async signIn(signInUserDto: SignInUserDto) : Promise<UserEntity> {
@@ -41,7 +41,7 @@ export class UsersService {
     if(!matchPassword) throw new BadRequestException(ErrorMessage.BAD_CREDENTIALS);
     
     delete userExists.password;
-    return await userExists;
+    return userExists;
   }
 
   async findAll() : Promise<UserDto[]>{
@@ -54,11 +54,11 @@ export class UsersService {
     const userExists = await this.findUserByEmail(email);
     if(!userExists) throw new BadRequestException(ErrorMessage.USER_NOT_FOUND);
 
-    return await UserDto.customMapping(userExists);
+    return UserDto.customMapping(userExists);
   }
 
   async update(email: string, updateUserDto: UpdateUserDto) {
-    const userExists = await this.findUserByEmail(email);
+    let userExists = await this.findUserByEmail(email);
     if(!userExists) throw new BadRequestException(ErrorMessage.USER_NOT_FOUND);
 
     userExists.name = updateUserDto.name;
@@ -67,7 +67,7 @@ export class UsersService {
 
     const user = await this.usersRepository.save(userExists);
 
-    return await UserDto.customMapping(user);
+    return UserDto.customMapping(user);
   }
 
   async remove(email: string) {
@@ -76,7 +76,7 @@ export class UsersService {
 
     await this.usersRepository.delete(userExists);
 
-    return SuccessMessage.USER_SUCCESSFULLY_DELETED;
+    return SuccessMessage.SUCCESSFULLY_DELETED;
   }
 
 
@@ -89,7 +89,7 @@ export class UsersService {
       id: user.id,
       email: user.email,
     }, 
-    process.env.ACCESS_TOKEN_EXPIRE_TIME, 
+    process.env.ACCESS_TOKEN_SECRET_KEY, 
     {expiresIn: process.env.ACCESS_TOKEN_EXPIRE_TIME});
   }
 }
