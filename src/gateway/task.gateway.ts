@@ -11,6 +11,7 @@ export class TaskGateway {
     @WebSocketServer()
     server: Server;
 
+    //this event is lunched when update task happens
     handleEvent(updateTaskDto: TaskDto) {
 
         this.server.emit('onEmit',{

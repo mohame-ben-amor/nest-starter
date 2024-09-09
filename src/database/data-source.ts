@@ -13,8 +13,8 @@ export const dataSourceOptions: DataSourceOptions={
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
     entities: [UserEntity, ProjectEntity, TaskEntity],
-    migrations:[__dirname + './migrations/*{.ts,.js}'],
-    synchronize: true,
+    migrations:[__dirname + './migrations/*{.ts,.js}'], //if we ever want want to use migrations logic
+    synchronize: true, // not good for production 
 }
 
 const dataSource= new DataSource(dataSourceOptions);
