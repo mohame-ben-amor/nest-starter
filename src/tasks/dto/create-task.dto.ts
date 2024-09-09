@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { TaskStatusEnum } from "../utility/common/tasks-status.enum";
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateTaskDto {
 
@@ -28,7 +28,8 @@ export class CreateTaskDto {
     projectName: string;
 
     @IsNotEmpty()
-    @ApiProperty({enum: ['PROGRESS', 'FINISHED'], description: 'status'})
+    @IsEnum(TaskStatusEnum)
+    @ApiProperty({type: Number, description: 'status'})
     status: TaskStatusEnum;
     
 }
